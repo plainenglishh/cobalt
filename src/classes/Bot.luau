@@ -14,19 +14,24 @@ function Bot.new(options: t.BotOptions?): t.Bot
 	local options: t.BotOptions = options or {}
 	local name: string = options.name or "Bot"
 
+	local errored = Event.new()
+	local function on_event_err(err: string)
+		errored:_fire(err)
+	end
+
 	local self: t.Bot = setmetatable({
 		name = name,
 
-		started = Event.new(),
-		stopped = Event.new(),
-		errored = Event.new(),
+		started = Event.new(on_event_err),
+		stopped = Event.new(on_event_err),
+		errored = errored,
 
-		console_log = Event.new(),
-		player_joined = Event.new(),
-		player_left = Event.new(),
-		player_spawned = Event.new(),
-		player_died = Event.new(),
-		chatted = Event.new(),
+		console_log = Event.new(on_event_err),
+		player_joined = Event.new(on_event_err),
+		player_left = Event.new(on_event_err),
+		player_spawned = Event.new(on_event_err),
+		player_died = Event.new(on_event_err),
+		chatted = Event.new(on_event_err),
 
 		_initial_player_ids = {},
 		_players = {},
