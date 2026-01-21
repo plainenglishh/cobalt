@@ -2,7 +2,7 @@ local t = require("@self/types")
 
 local cobalt = {}
 
-cobalt.version = "not yet versioned"
+cobalt.version = "0.1.0"
 
 local Bot = require("@self/classes/Bot")
 cobalt.Bot = Bot
