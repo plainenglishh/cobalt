@@ -16,7 +16,7 @@ plugin instead.
 
 ## Example
 
-The following is an example kits bot:-
+The following is an example kit bot:-
 
 ```luau
 local cobalt = require("@cobalt/")
