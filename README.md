@@ -4,14 +4,14 @@ Lune library for writing Rust admin bots in Luau.
 
 ## About
 
-Cobalt intends to provide a way to write quick and experimental automatic
-actions for a Rust server, instead of writing a full plugin.
+Cobalt intends to provide a way to write quick, experimental automatic actions
+for a Rust server in Luau, using Lune.
 
-Cobalt works by attaching to the servers RCON interface, listening for specific
-events (by perioidically sending commands, or by parsing server logs), and
-sending commands back to perform specific actions.
+Cobalt works by attaching to the server's RCON interface, listening for specific
+events (by periodically sending commands and parsing server logs), and sending
+commands back to perform in-game actions.
 
-This is primarily a proof of concept, and you should probably write a uMod/Oxide
+This is primarily a proof of concept; you should probably write a uMod/Oxide
 plugin instead.
 
 ## Example
