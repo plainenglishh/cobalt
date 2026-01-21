@@ -67,7 +67,7 @@ bot.errored:connect(function(err)
 	bot:say(`KitBot has suffered an error: {err}`)
 end)
 
-bot:start("rcon_ip", "rcon_password")
+bot:run("rcon_ip", "rcon_password")
 ```
 
 More examples can be found under `examples/`.

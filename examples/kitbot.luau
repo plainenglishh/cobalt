@@ -47,4 +47,4 @@ bot.errored:connect(function(err)
 	bot:say(`KitBot has suffered an error: {err}`)
 end)
 
-bot:start(process.args[1], process.args[2])
+bot:run(process.args[1], process.args[2])

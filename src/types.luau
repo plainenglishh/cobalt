@@ -70,7 +70,7 @@ export type Bot = setmetatable<
 		--[=[
 			Connects to the server.
 		]=]
-		start: (self: Bot, host: string, password: string, tls: boolean?) -> (),
+		run: (self: Bot, host: string, password: string, tls: boolean?) -> (),
 
 		--[=[
 			Sends an RCON message to the server, without expecting a reply.

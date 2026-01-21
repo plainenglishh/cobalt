@@ -66,4 +66,4 @@ bot.chatted:connect(function(player: cobalt.Player?, message: string, colour: st
 	end
 end)
 
-bot:start(process.args[1], process.args[2])
+bot:run(process.args[1], process.args[2])

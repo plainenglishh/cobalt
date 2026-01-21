@@ -62,7 +62,7 @@ function Bot.new(options: t.BotOptions?): t.Bot
 	return self
 end
 
-function Bot.start(self: t.Bot, host: string, password: string, tls: boolean?)
+function Bot.run(self: t.Bot, host: string, password: string, tls: boolean?)
 	self._rcon:connect(host, password, tls)
 
 	task.defer(function()
