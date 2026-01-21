@@ -1,4 +1,5 @@
 local process = require("@lune/process")
+local stdio = require("@lune/stdio")
 local cobalt = require("../src")
 
 type Kit = { { name: string, quantity: number } }
@@ -9,6 +10,12 @@ local KITS: { [string]: Kit } = {
 		{ name = "ammo.rifle", quantity = 128 },
 	},
 }
+
+local function award_kit(player: cobalt.Player, kit: Kit)
+	for _, item in kit do
+		player:give_item(item.name, item.quantity)
+	end
+end
 
 local bot = cobalt.Bot.new()
 
@@ -21,10 +28,11 @@ bot.chatted:connect(function(player: cobalt.Player?, message: string)
 		return
 	end
 
-	local kit_name = string.match(message, "^!kit (%w+)$")
+	local args = string.split(string.sub(message, 5), " ")
+
+	local kit_name = args[1]
 	if not kit_name then
 		bot:say("specify kit")
-		return
 	end
 
 	local kit = KITS[kit_name]
@@ -33,9 +41,7 @@ bot.chatted:connect(function(player: cobalt.Player?, message: string)
 		return
 	end
 
-	for _, item in kit do
-		player:give_item(item.name, item.quantity)
-	end
+	award_kit(player, kit)
 end)
 
 bot.started:connect(function()
@@ -43,8 +49,9 @@ bot.started:connect(function()
 end)
 
 bot.errored:connect(function(err)
-	print(`KitBot has suffered an error: {err}`)
-	bot:say(`KitBot has suffered an error: {err}`)
+	stdio.ewrite(`{stdio.color("red")}error caught: {err.message}{stdio.color("reset")}\n`)
+	stdio.ewrite(`{stdio.style("dim")}{err.traceback}{stdio.color("reset")}\n`)
+	bot:say(`KitBot Error: {err.message}`)
 end)
 
-bot:run(process.args[1], process.args[2])
+bot:run(process.args[1] or error("specify host"), process.args[2] or error("specify password"))

@@ -3,12 +3,56 @@ local RconClient = require("./RconClient")
 
 local t = {}
 
+export type ErrorSourceService = {
+	type: "service",
+	service: BotServiceUpdateFn,
+}
+
+export type ErrorSourceEvent = {
+	type: "event",
+	event: Event.Event<...any>,
+	listener: Event.Listener<...any>,
+}
+
+export type ErrorSource = ErrorSourceService | ErrorSourceEvent
+
+function t.ErrorSourceService(service: BotServiceUpdateFn): ErrorSourceService
+	return {
+		type = "service",
+		service = service,
+	}
+end
+
+function t.ErrorSourceEvent(event: Event.Event<...any>, listener: Event.Listener<...any>): ErrorSourceEvent
+	return {
+		type = "event",
+		event = event,
+		listener = listener,
+	}
+end
+
+export type Error = {
+	message: any,
+	traceback: string,
+	source: ErrorSource,
+	context: { [string]: any },
+}
+
+function t.Error(message: any, traceback: string, source: ErrorSource, context: { [string]: any }?): Error
+	return {
+		message = message,
+		traceback = traceback,
+		source = source,
+		context = context or {},
+	}
+end
+
 export type BotOptions = {
 	name: string?,
 }
 
-export type botServiceFn = (bot: Bot) -> ()
-export type botService = { period: number, next_fire: number, callback: botServiceFn }
+export type BotServiceUpdateFn = (bot: Bot) -> ()
+export type BotServiceInstance = { period: number, next_fire: number, update: BotServiceUpdateFn }
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error"
 
 --[=[
@@ -26,7 +70,7 @@ export type Bot = setmetatable<
 		read stopped: Event.Event<>,
 
 		--- Fires when an internal error occurs.
-		read errored: Event.Event<string>,
+		read errored: Event.Event<Error>,
 
 		--- Fires for non-targetted messages.
 		read console_log: Event.Event<RconClient.ServerMessage>,
@@ -46,7 +90,7 @@ export type Bot = setmetatable<
 		--- Fires when someone sends a chat message.
 		read chatted: Event.Event<Player?, string, string, number>,
 
-		_services: { botService },
+		_services: { BotServiceInstance },
 		_initial_player_ids: { string },
 		_players: { Player },
 		_rcon: RconClient.RconClient,
@@ -59,13 +103,13 @@ export type Bot = setmetatable<
 		]=]
 		new: (options: BotOptions?) -> Bot,
 
-		_error: (self: Bot, message: string) -> (),
+		_error: (self: Bot, message: string, traceback: string, source: ErrorSource, context: { [string]: any }?) -> (),
 
 		--[=[
 			Registers a service to run every `period` seconds (or every cycle 
 			if 0).
 		]=]
-		register_service: (self: Bot, period: number, callback: botServiceFn) -> () -> (),
+		register_service: (self: Bot, period: number, callback: BotServiceUpdateFn) -> () -> (),
 
 		--[=[
 			Connects to the server.

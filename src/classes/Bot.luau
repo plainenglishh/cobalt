@@ -7,6 +7,10 @@ local RconClient = require("../RconClient")
 local t = require("../types")
 local hooks = require("../hooks")
 
+local function errored_errored(err: Event.Error)
+	print(`[cobalt]: Bot.errored handler failed: {err.message}\n{err.traceback}`)
+end
+
 local Bot = {}
 Bot.__index = Bot
 
@@ -14,9 +18,10 @@ function Bot.new(options: t.BotOptions?): t.Bot
 	local options: t.BotOptions = options or {}
 	local name: string = options.name or "Bot"
 
-	local errored = Event.new()
-	local function on_event_err(err: string)
-		errored:_fire(err)
+	local errored: Event.Event<t.Error> = Event.new(errored_errored)
+
+	local function on_event_err(err: Event.Error)
+		errored:_fire(t.Error(err.message, err.traceback, t.ErrorSourceEvent(err.event, err.listener)))
 	end
 
 	local self: t.Bot = setmetatable({
@@ -71,6 +76,10 @@ function Bot.run(self: t.Bot, host: string, password: string, tls: boolean?)
 	self._rcon:connect(host, password, tls)
 
 	task.defer(function()
+		local function handle_service_error(err: any)
+			self:_error(err, debug.traceback("", 2), t.ErrorSourceService(debug.info(3, "f")))
+		end
+
 		self.started:wait()
 		while self._rcon:status() == "active" do
 			local now = os.clock()
@@ -81,10 +90,7 @@ function Bot.run(self: t.Bot, host: string, password: string, tls: boolean?)
 					continue
 				end
 
-				local ok, err: string = pcall(service.callback, self)
-				if not ok then
-					self:_error(`error when running service {service.callback}: {err}`)
-				end
+				xpcall(service.update, handle_service_error, self)
 
 				service.next_fire = now + service.period
 			end
@@ -94,11 +100,15 @@ function Bot.run(self: t.Bot, host: string, password: string, tls: boolean?)
 	end)
 end
 
-function Bot.register_service(self: t.Bot, period: number, callback: t.botServiceFn): () -> ()
-	local service = {
+function Bot._error(self: t.Bot, message: string, traceback: string, source: t.ErrorSource, context: { [string]: any }?)
+	self.errored:_fire(t.Error(message, traceback, source, context))
+end
+
+function Bot.register_service(self: t.Bot, period: number, update: t.BotServiceUpdateFn): () -> ()
+	local service: t.BotServiceInstance = {
 		period = period,
 		next_fire = os.clock(),
-		callback = callback,
+		update = update,
 	}
 
 	table.insert(self._services, service)

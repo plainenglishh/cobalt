@@ -7,8 +7,9 @@ bot.started:connect(function()
 	print("bot ready")
 end)
 
-bot.errored:connect(function(err: string)
-	print(`Bot errored: {err}`)
+bot.errored:connect(function(err)
+	print(`Bot errored: {err.message}`)
+	print(err.traceback)
 end)
 
 bot.player_joined:connect(function(player)
