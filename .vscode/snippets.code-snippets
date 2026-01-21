@@ -1,0 +1,19 @@
+{
+    "Class": {
+        "scope": "luau",
+        "prefix": "class",
+        "body": [
+            "export type ${1:ClassName} = setmetatable<{}, {",
+            "    __index: getmetatable<${1:ClassName}>,",
+            "    new: () -> ${1:ClassName},",
+            "}>",
+            "",
+            "local ${1:ClassName} = {}",
+            "${1:ClassName}.__index = ${1:ClassName}",
+            "",
+            "function ${1:ClassName}.new(): ${1:ClassName}",
+            "    return setmetatable({}, ${1:ClassName})",
+            "end",
+        ]
+    }
+}
