@@ -2,6 +2,7 @@ local process = require("@lune/process")
 local cobalt = require("../src")
 
 type Kit = { { name: string, quantity: number } }
+
 local KITS: { [string]: Kit } = {
 	ak = {
 		{ name = "rifle.ak", quantity = 1 },

@@ -19,10 +19,10 @@ plugin instead.
 The following is an example kits bot:-
 
 ```luau
-local cobalt = require("path/to/lib")
-local cobalt = require("../src")
+local cobalt = require("@cobalt/")
 
 type Kit = { { name: string, quantity: number } }
+
 local KITS: { [string]: Kit } = {
 	ak = {
 		{ name = "rifle.ak", quantity = 1 },
