@@ -5,3 +5,6 @@
   - [ ] Tailor Event for bot-level err handling (what if error handler errors??)
   - [ ] write error handling readme section (what is caught and emitted as error
         event, what isn't, etc)
+- [ ] platform independence
+  - [ ] WebSocket impl for Lute and Zune
+  - [ ] Switch to json.luau for pure luau json parsing
