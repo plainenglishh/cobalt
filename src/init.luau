@@ -9,6 +9,7 @@ cobalt.Bot = Bot
 export type Bot = t.Bot
 export type BotOptions = t.BotOptions
 export type Player = t.Player
+export type IntoId = t.IntoId
 
 local RconClient = require("@self/RconClient")
 cobalt.RconClient = RconClient
