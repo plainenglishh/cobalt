@@ -8,8 +8,8 @@ Cobalt intends to provide a way to write quick, experimental automatic actions
 for a Rust server in Luau, using Lune.
 
 Cobalt works by attaching to the server's RCON interface, listening for specific
-events (by periodically sending commands and parsing server logs), and sending
-commands back to perform in-game actions.
+(by periodically sending commands and parsing server logs), and sending commands
+back to perform in-game actions.
 
 This is primarily a proof of concept; you should probably write a uMod/Oxide
 plugin instead.
