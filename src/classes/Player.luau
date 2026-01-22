@@ -50,4 +50,8 @@ function Player.position(self: t.Player): vector
 	return rust_vector.decode(position)
 end
 
+function Player.connected(self: t.Player): boolean
+	return table.find(self.bot._players, self) ~= nil
+end
+
 return Player

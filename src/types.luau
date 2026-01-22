@@ -230,6 +230,11 @@ export type Player = setmetatable<
 		]=]
 		position: (self: Player) -> vector,
 
+		--[=[
+			Returns whether this `Player` is online.
+		]=]
+		connected: (self: Player) -> boolean,
+
 		--- **PRIVATE -- DO NOT USE**
 		_new: (server: Bot, id: string) -> Player,
 		--- **PRIVATE -- DO NOT USE**
