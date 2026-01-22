@@ -4,16 +4,16 @@ local t = require("./types")
 local rust_vector = require("./util/rust_vector")
 
 type Callback = (bot: t.Bot, message: RconClient.ServerMessage, ...string) -> ()
-type LogHook = {
+type Hook = {
 	identifier: number?,
 	type: string?,
 	pattern: string?,
 	callback: Callback,
 }
 
-local log_hooks: { LogHook } = {}
+local HOOKS: { Hook } = {}
 local function add_hook(identifier: number?, type: string?, pattern: string?, callback: Callback)
-	table.insert(log_hooks, {
+	table.insert(HOOKS, {
 		identifier = identifier,
 		type = type,
 		pattern = pattern,
@@ -38,8 +38,13 @@ end)
 
 local hooks = {}
 
-function hooks.run_log_hooks(bot: t.Bot, message: RconClient.ServerMessage)
-	for _, hook in log_hooks do
+function hooks.run_hooks(bot: t.Bot, message: RconClient.ServerMessage)
+	local function hook_err_handler(err: any)
+		local traceback = debug.traceback("", 2)
+		bot:_error(err, traceback, t.ErrorSourceHook())
+	end
+
+	for _, hook in HOOKS do
 		if
 			(message.identifier or message.identifier) == hook.identifier
 			and (message.type or hook.type) == hook.type
@@ -50,10 +55,7 @@ function hooks.run_log_hooks(bot: t.Bot, message: RconClient.ServerMessage)
 				matches = { string.match(message.message, hook.pattern) }
 			end
 
-			local ok, err: string = pcall(hook.callback, bot, message, unpack(matches))
-			if not ok then
-				bot:_error(`error when calling log hook {hook.callback}: {err}`)
-			end
+			xpcall(hook.callback, hook_err_handler, bot, message, unpack(matches))
 		end
 	end
 end

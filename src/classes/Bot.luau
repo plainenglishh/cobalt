@@ -63,7 +63,7 @@ function Bot.new(options: t.BotOptions?): t.Bot
 			return
 		end
 
-		hooks.run_log_hooks(self, message)
+		hooks.run_hooks(self, message)
 		if not handled then
 			self.console_log:_fire(message)
 		end

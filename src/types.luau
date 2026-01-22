@@ -8,20 +8,18 @@ export type ErrorSourceService = {
 	service: BotServiceUpdateFn,
 }
 
-export type ErrorSourceEvent = {
-	type: "event",
-	event: Event.Event<...any>,
-	listener: Event.Listener<...any>,
-}
-
-export type ErrorSource = ErrorSourceService | ErrorSourceEvent
-
 function t.ErrorSourceService(service: BotServiceUpdateFn): ErrorSourceService
 	return {
 		type = "service",
 		service = service,
 	}
 end
+
+export type ErrorSourceEvent = {
+	type: "event",
+	event: Event.Event<...any>,
+	listener: Event.Listener<...any>,
+}
 
 function t.ErrorSourceEvent(event: Event.Event<...any>, listener: Event.Listener<...any>): ErrorSourceEvent
 	return {
@@ -30,6 +28,18 @@ function t.ErrorSourceEvent(event: Event.Event<...any>, listener: Event.Listener
 		listener = listener,
 	}
 end
+
+export type ErrorSourceHook = {
+	type: "hook",
+}
+
+function t.ErrorSourceHook(): ErrorSourceHook
+	return {
+		type = "hook",
+	}
+end
+
+export type ErrorSource = ErrorSourceService | ErrorSourceEvent | ErrorSourceHook
 
 export type Error = {
 	message: any,
@@ -90,9 +100,13 @@ export type Bot = setmetatable<
 		--- Fires when someone sends a chat message.
 		read chatted: Event.Event<Player?, string, string, number>,
 
+		--- **PRIVATE -- DO NOT USE**
 		_services: { BotServiceInstance },
+		--- **PRIVATE -- DO NOT USE**
 		_initial_player_ids: { string },
+		--- **PRIVATE -- DO NOT USE**
 		_players: { Player },
+		--- **PRIVATE -- DO NOT USE**
 		_rcon: RconClient.RconClient,
 	},
 	{
@@ -103,13 +117,11 @@ export type Bot = setmetatable<
 		]=]
 		new: (options: BotOptions?) -> Bot,
 
-		_error: (self: Bot, message: string, traceback: string, source: ErrorSource, context: { [string]: any }?) -> (),
-
 		--[=[
 			Registers a service to run every `period` seconds (or every cycle 
 			if 0).
 		]=]
-		register_service: (self: Bot, period: number, callback: BotServiceUpdateFn) -> () -> (),
+		register_service: (self: Bot, period: number, update: BotServiceUpdateFn) -> () -> (),
 
 		--[=[
 			Connects to the server.
@@ -149,6 +161,9 @@ export type Bot = setmetatable<
 			Spawns an entity at a given position.
 		]=]
 		spawn_entity: (self: Bot, entity: string, position: vector) -> (),
+
+		--- **PRIVATE -- DO NOT USE**
+		_error: (self: Bot, message: string, traceback: string, source: ErrorSource, context: { [string]: any }?) -> (),
 	}
 >
 
@@ -159,24 +174,66 @@ export type Player = setmetatable<
 	{
 		--- The `Bot` this player belongs to.
 		bot: Bot,
+
+		--- The `Player`'s steamID64.
 		id: string,
+
+		--- The `Player`'s display name.
 		display_name: string,
+
+		--- The `Player`'s ping.
 		ping: number,
+
+		--- The `Player`'s network address.
 		address: string,
+
+		--- The `Player`'s character entity id.
 		entity_id: number,
+
+		--- The `Player`'s current health.
 		health: number,
+
+		--- How long the `Player` has been connected to the server.
 		connected_seconds: number,
+
+		--- The `Player`'s anti-cheat violation level.
 		violation_level: number,
 	},
 	{
 		__index: getmetatable<Player>,
-		_new: (server: Bot, id: string) -> Player,
-		_update: (self: Player, playerinfo: any) -> (),
+
+		--[=[
+			Awards an item to the `Player`.
+
+			This emits a chat message. As far as I'm aware, there is no way to 
+			get around this without a server plugin.
+		]=]
 		give_item: (self: Player, item: string, quantity: number?, skin: number?) -> (),
+
+		--[=[
+			Kills the `Player`.
+		]=]
 		kill: (self: Player) -> (),
+
+		--[=[
+			Disconnects the `Player` from the server, optionally with a reason.
+		]=]
 		kick: (self: Player, reason: string?) -> (),
+
+		--[=[
+			Returns a vector encoding the `Player`'s eye direction (pitch, yaw).
+		]=]
 		eyes: (self: Player) -> vector,
+
+		--[=[
+			Returns the `Player`s position.
+		]=]
 		position: (self: Player) -> vector,
+
+		--- **PRIVATE -- DO NOT USE**
+		_new: (server: Bot, id: string) -> Player,
+		--- **PRIVATE -- DO NOT USE**
+		_update: (self: Player, playerinfo: any) -> (),
 	}
 >
 
