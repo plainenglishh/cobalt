@@ -1,5 +1,3 @@
-<a href="https://cobalt.plainenglish.xyz"><img align="right" height="200" src="docs/public/logo.svg" alt="Cobalt Logo"/></a>
-
 <h1 align="center">Cobalt</h1>
 <div align="center">
 	<div>
@@ -11,6 +9,8 @@
 		</a>
 	</div>
 </div>
+
+<a href="https://cobalt.plainenglish.xyz"><img align="right" height="250" src="docs/public/logo.svg" alt="Cobalt Logo" style="padding-left: 50px;"/></a>
 
 <br/>
 
