@@ -163,6 +163,9 @@ export type Bot = setmetatable<
 		spawn_entity: (self: Bot, entity: string, position: vector) -> (),
 
 		--- **PRIVATE -- DO NOT USE**
+		_update_players_async: (self: Bot) -> (),
+
+		--- **PRIVATE -- DO NOT USE**
 		_error: (self: Bot, message: string, traceback: string, source: ErrorSource, context: { [string]: any }?) -> (),
 	}
 >

@@ -22,12 +22,22 @@ local function add_hook(identifier: number?, type: string?, pattern: string?, ca
 end
 
 add_hook(0, "Generic", "^.+%[(%d*)] has spawned", function(bot, message, id)
-	local player = bot:get_player_by_id(id) or error(`non-existent spawn event for {id}?`)
+	local player = bot:get_player_by_id(id)
+	if not player then
+		bot:_update_players_async()
+		player = bot:get_player_by_id(id)
+	end
+
+	if not player then
+		error(`spawn event for non-existent player '{id}'`)
+		return
+	end
+
 	bot.player_spawned:_fire(player)
 end)
 
 add_hook(0, "Generic", "^.+%[(%d*)] was killed by (.+) at %((.+)%)", function(bot, message, id, cause, location)
-	local player = bot:get_player_by_id(id) or error(`non-existent death event for {id}?`)
+	local player = bot:get_player_by_id(id) or error(`death event for non-existent player '{id}'`) -- dont do spawns forced refresh
 	bot.player_died:_fire(player, cause, rust_vector.decode(location))
 end)
 

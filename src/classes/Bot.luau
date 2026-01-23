@@ -1,4 +1,5 @@
 local task = require("@lune/task")
+local Player = require("./Player")
 local json = require("../dependencies/json")
 local rust_vector = require("../util/rust_vector")
 local player_service = require("../services/player_service")
@@ -146,6 +147,60 @@ end
 
 function Bot.spawn_entity(self: t.Bot, entity: string, position: vector)
 	self:execute(`entity.spawn "{entity}" "{rust_vector.encode(position)}"`)
+end
+
+function Bot._update_players_async(self: t.Bot)
+	local playerlist: any = json.decode(self._rcon:request_async("playerlist"))
+
+	local old_players: { t.Player } = self._players
+	local new_players: { t.Player } = {}
+
+	for _, playerinfo in playerlist do
+		local player = self:get_player_by_id(playerinfo.SteamID) or Player._new(self, playerinfo.SteamID)
+		player:_update(playerinfo)
+		table.insert(new_players, player)
+	end
+
+	self._players = new_players
+
+	for _, new_player in new_players do
+		local joined = true
+
+		for _, old_player in old_players do
+			if new_player.id == old_player.id then
+				joined = false
+			end
+		end
+
+		if joined then
+			if table.find(self._initial_player_ids, new_player.id) then
+				continue
+			end
+
+			self.player_joined:_fire(new_player)
+		end
+	end
+
+	for _, old_player in old_players do
+		local left = true
+
+		for _, new_player in new_players do
+			if old_player.id == new_player.id then
+				left = false
+			end
+		end
+
+		if left then
+			if table.find(self._initial_player_ids, old_player.id) then
+				table.remove(
+					self._initial_player_ids,
+					table.find(self._initial_player_ids, old_player.id) or error("never")
+				)
+			end
+
+			self.player_left:_fire(old_player)
+		end
+	end
 end
 
 return Bot
