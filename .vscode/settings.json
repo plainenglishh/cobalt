@@ -1,5 +1,8 @@
 {
     "luau-lsp.fflags.enableNewSolver": true,
     "luau-lsp.platform.type": "standard",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "[markdown]": {
+        "editor.formatOnSave": false
+    }
 }

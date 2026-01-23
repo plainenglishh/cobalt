@@ -1,13 +1,22 @@
-<p align="right">
-    <a href="https://cobalt.plainenglish.xyz"><img height="200" src="docs/public/logo.svg" alt="Cobalt Logo"/></a>
-</p>
+<a href="https://cobalt.plainenglish.xyz"><img align="right" height="200" src="docs/public/logo.svg" alt="Cobalt Logo"/></a>
 
-<h1 align="center">Cobalt</h1>
+# Cobalt
+
+<div align="center">
+	<div>
+		<a href="https://github.com/plainenglishh/cobalt/blob/main/src/init.luau">
+			<img src="https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fplainenglishh%2Fcobalt%2Frefs%2Fheads%2Fmain%2Fsrc%2Finit.luau&search=cobalt%5C.version%20%3D%20%22(.%2B)%22&replace=%241&label=Version&color=%23cd412b" alt="version" />
+		</a>
+		<a href="https://github.com/plainenglishh/cobalt/blob/main/LICENSE.txt">
+			<img src="https://img.shields.io/github/license/plainenglishh/cobalt.svg?label=License&color=informational" alt="license" />
+		</a>
+	</div>
+</div>
+
+<br/>
 
 A Luau [Rust](https://rust.facepunch.com/) RCON Bot library.
 
-
-## About
 
 Cobalt allows you to listen to Rust server events and respond by performing 
 in-game actions.
