@@ -2,8 +2,7 @@
 <div align="center">
 	<div>
 		<a href="https://github.com/plainenglishh/cobalt/blob/main/src/init.luau">
-			<img src="https://img.shields.io/github/v/release/plainenglishh/cobalt?display_name=release&label=Release
-			" alt="version" />
+			<img src="https://img.shields.io/github/v/release/plainenglishh/cobalt?display_name=release&label=Release" alt="version" />
 		</a>
 		<a href="https://github.com/plainenglishh/cobalt/blob/main/LICENSE.txt">
 			<img src="https://img.shields.io/github/license/plainenglishh/cobalt.svg?label=License&color=informational" alt="license" />
