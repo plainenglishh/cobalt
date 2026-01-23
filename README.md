@@ -2,7 +2,8 @@
 <div align="center">
 	<div>
 		<a href="https://github.com/plainenglishh/cobalt/blob/main/src/init.luau">
-			<img src="https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fplainenglishh%2Fcobalt%2Frefs%2Fheads%2Fmain%2Fsrc%2Finit.luau&search=cobalt%5C.version%20%3D%20%22(.%2B)%22&replace=%241&label=Version&color=%23cd412b" alt="version" />
+			<img src="https://img.shields.io/github/v/release/plainenglishh/cobalt?display_name=release&label=Release
+			" alt="version" />
 		</a>
 		<a href="https://github.com/plainenglishh/cobalt/blob/main/LICENSE.txt">
 			<img src="https://img.shields.io/github/license/plainenglishh/cobalt.svg?label=License&color=informational" alt="license" />
@@ -12,7 +13,7 @@
 
 <br/>
 
-<a href="https://cobalt.plainenglish.xyz"><img align="right" height="200" src="docs/public/logo.svg" alt="Cobalt Logo" style="padding-left: 50px;"/></a>
+<a href="https://cobalt.plainenglish.xyz"><img align="right" height="200" src="docs/public/logo.svg" alt="Cobalt Logo" style="padding-left: 100px;"/></a>
 
 
 A Luau [Rust](https://rust.facepunch.com/) RCON Bot library.
