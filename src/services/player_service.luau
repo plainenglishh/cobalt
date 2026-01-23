@@ -1,5 +1,3 @@
-local Player = require("../classes/Player")
-local json = require("../dependencies/json")
 local t = require("../types")
 
 --[=[
