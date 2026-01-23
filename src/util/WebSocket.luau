@@ -1,16 +1,22 @@
 local net = require("@lune/net")
 local task = require("@lune/task")
 
-export type WebSocketStatus = "open" | "closed"
+export type WebSocketStatus = "connecting" | "open" | "closed" | "errored"
 
 --[=[
     Polling-based WebSocket.
 ]=]
 export type WebSocket = setmetatable<{
-	_socket: net.WebSocket?,
+	_status: WebSocketStatus,
+	_error: any?,
 	_queue: { string },
+	_socket: net.WebSocket?,
+	_thread: thread,
 }, {
 	__index: getmetatable<WebSocket>,
+
+	_poll: (self: WebSocket) -> (),
+	_assert_open: (self: WebSocket, message: string?, level: number?) -> (),
 
 	--[=[
         Creates a new `WebSocket`.
@@ -34,58 +40,100 @@ local WebSocket = {}
 WebSocket.__index = WebSocket
 
 function WebSocket.new(url: string): WebSocket
-	local self: WebSocket = setmetatable({
-		_socket = nil :: net.WebSocket?,
+	local self: WebSocket
+	self = setmetatable({
+		_status = "connecting",
+		_error = nil,
 		_queue = {},
-	}, WebSocket)
-
-	task.spawn(function()
-		local socket = net.socket(url)
-		self._socket = socket
-
-		while task.wait() do
-			local message = socket:next()
-			if not message then
-				break
+		_socket = nil :: net.WebSocket?,
+		_thread = coroutine.create(function()
+			if self._status == "closed" then
+				return
 			end
 
-			table.insert(self._queue, message)
-		end
-	end)
+			local socket = net.socket(url)
 
+			if self._status == "closed" then
+				return
+			end
+
+			self._socket = socket
+			self._status = "open"
+
+			while true do
+				if self._status == "closed" then
+					return
+				end
+
+				local ok, msg_or_err = pcall(socket.next, socket)
+				if not ok then
+					self._status = "errored"
+					self._error = msg_or_err
+					return
+				end
+
+				if not msg_or_err then
+					self._status = "closed"
+				end
+
+				table.insert(self._queue, msg_or_err)
+			end
+		end),
+	}, WebSocket)
+	self:_poll()
 	return self
 end
 
-function WebSocket.status(self: WebSocket): WebSocketStatus
-	if (not self._socket) or self._socket.closeCode then
-		return "closed"
-	else
-		return "open"
+function WebSocket._poll(self: WebSocket)
+	local thread = self._thread
+	if coroutine.status(thread) == "dead" then
+		if self._status ~= "errored" then
+			self._status = "closed"
+		end
+
+		return
+	end
+
+	local ok, err = coroutine.resume(thread)
+	if not ok then
+		self._status = "errored"
+		self._error = err
 	end
 end
 
-function WebSocket.try_next(self: WebSocket): string?
-	if self:status() ~= "open" then
-		error("not open")
+function WebSocket._assert_open(self: WebSocket, message: string?, level: number?)
+	if self._status ~= "open" then
+		error(message or "WebSocket:_assert_open failed", (level or 1) + 1)
 	end
+end
 
+function WebSocket.status(self: WebSocket): WebSocketStatus
+	return self._status
+end
+
+function WebSocket.try_next(self: WebSocket): string?
+	self:_assert_open("attempt to call WebSocket:try_next() on non-open WebSocket", 2)
 	return table.remove(self._queue, 1)
 end
 
 function WebSocket.send(self: WebSocket, data: buffer | string)
-	if not self._socket then
-		error(`not connected`)
-	end
+	self:_assert_open("attempt to call WebSocket:send() on non-open WebSocket", 2)
+
+	self:_poll()
+	assert(self._socket)
 
 	self._socket:send(data, false)
 end
 
 function WebSocket.close(self: WebSocket, code: number?)
-	if not self._socket then
-		error(`not connected`)
+	if self._status == "closed" then
+		error(`attempt to call WebSocket:close() on a closed WebSocket.`, 2)
 	end
 
-	self._socket:close()
+	self._status = "closed"
+	if self._socket then
+		self._socket:close(code)
+	end
 end
 
 return WebSocket
