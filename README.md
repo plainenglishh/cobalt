@@ -28,8 +28,6 @@ back to perform actions.
 
 ## Example
 
-The following is an example kit bot:-
-
 ```luau
 local cobalt = require("@cobalt/")
 
