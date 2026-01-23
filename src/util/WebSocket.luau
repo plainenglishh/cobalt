@@ -1,5 +1,4 @@
 local net = require("@lune/net")
-local task = require("@lune/task")
 
 export type WebSocketStatus = "connecting" | "open" | "closed" | "errored"
 
