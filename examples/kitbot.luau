@@ -28,11 +28,13 @@ bot.chatted:connect(function(player: cobalt.Player?, message: string)
 		return
 	end
 
-	local args = string.split(string.sub(message, 5), " ")
+	local args = string.split(message, " ")
+	table.remove(args, 1)
 
 	local kit_name = args[1]
 	if not kit_name then
 		bot:say("specify kit")
+		return
 	end
 
 	local kit = KITS[kit_name]

@@ -1,5 +1,5 @@
-local serde = require("@lune/serde")
 local task = require("@lune/task")
+local json = require("../dependencies/json")
 local rust_vector = require("../util/rust_vector")
 local player_service = require("../services/player_service")
 local Event = require("../util/Event")
@@ -46,7 +46,7 @@ function Bot.new(options: t.BotOptions?): t.Bot
 	}, Bot)
 
 	self._rcon.connected:connect(function()
-		for _, info in serde.decode("json", self:request_async("playerlist")) do
+		for _, info in json.decode(self:request_async("playerlist")) :: any do
 			table.insert(self._initial_player_ids, info.SteamID :: string)
 		end
 

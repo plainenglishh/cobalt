@@ -1,5 +1,5 @@
-local serde = require("@lune/serde")
 local Player = require("../classes/Player")
+local json = require("../dependencies/json")
 local t = require("../types")
 
 --[=[
@@ -7,7 +7,7 @@ local t = require("../types")
     events, and updating player objects.
 ]=]
 local function player_service(bot: t.Bot)
-	local playerlist = serde.decode("json", bot._rcon:request_async("playerlist"))
+	local playerlist: any = json.decode(bot._rcon:request_async("playerlist"))
 
 	local old_players: { t.Player } = bot._players
 	local new_players: { t.Player } = {}

@@ -1,7 +1,7 @@
-local serde = require("@lune/serde")
 local RconClient = require("./RconClient")
 local t = require("./types")
 local rust_vector = require("./util/rust_vector")
+local json = require("./dependencies/json")
 
 type Callback = (bot: t.Bot, message: RconClient.ServerMessage, ...string) -> ()
 type Hook = {
@@ -32,7 +32,7 @@ add_hook(0, "Generic", "^.+%[(%d*)] was killed by (.+) at %((.+)%)", function(bo
 end)
 
 add_hook(-1, "Chat", nil, function(bot, message)
-	local chat = serde.decode("json", message.message)
+	local chat: any = json.decode(message.message)
 	bot.chatted:_fire(bot:get_player_by_id(chat.UserId), chat.Message, chat.Color, chat.Time)
 end)
 

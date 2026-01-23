@@ -11,4 +11,4 @@
   - [ ] Rework `Bot:run` to call both `Bot:step` and `Bot:connect`.
 - [ ] platform independence
   - [ ] WebSocket impl for Lute and Zune
-  - [ ] Switch to json.luau for pure luau json parsing
+  - [X] Switch to json.luau for pure luau json parsing

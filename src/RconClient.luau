@@ -1,8 +1,8 @@
-local serde = require("@lune/serde")
 local task = require("@lune/task")
 local Event = require("./util/Event")
 local WebSocket = require("./util/WebSocket")
 local socket_address = require("./util/socket_address")
+local json = require("./dependencies/json")
 
 local DEFAULT_RCON_PORT = 28016
 local DEFAULT_REQUEST_TIMEOUT = 5
@@ -202,7 +202,7 @@ function RconClient.connect(self: RconClient, host: string, password: string, tl
 					break
 				end
 
-				local raw_message = serde.decode("json", wire_message)
+				local raw_message: any = json.decode(wire_message)
 				local message: ServerMessage = {
 					message = raw_message.Message,
 					identifier = raw_message.Identifier,
@@ -233,7 +233,7 @@ function RconClient.connect(self: RconClient, host: string, password: string, tl
 					self._active_requests[queued_message.message.identifier] = queued_message
 				end
 
-				local wire_message = serde.encode("json", {
+				local wire_message = json.encode({
 					Message = queued_message.message.message,
 					Identifier = queued_message.message.identifier,
 					Name = self.name,
