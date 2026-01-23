@@ -1,7 +1,6 @@
 <a href="https://cobalt.plainenglish.xyz"><img align="right" height="200" src="docs/public/logo.svg" alt="Cobalt Logo"/></a>
 
-# Cobalt
-
+<h1 align="center">Cobalt<h1>
 <div align="center">
 	<div>
 		<a href="https://github.com/plainenglishh/cobalt/blob/main/src/init.luau">
