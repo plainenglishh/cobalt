@@ -1,4 +1,4 @@
-local task = require("@lune/task")
+local sys = require("../sys")
 
 export type Listener<T...> = (T...) -> ()
 export type ErrorHandler = (err: Error) -> ()
@@ -19,6 +19,8 @@ export type Event<T...> = setmetatable<{
 }, {
 	__index: getmetatable<Event<T...>>,
 	new: (on_error: ErrorHandler?) -> Event<T...>,
+
+	--- **PRIVATE -- DO NOT USE!** There are no circumstances where you, a library user, will need to fire an event. **DON'T DO IT.**
 	_fire: (self: Event<T...>, T...) -> (),
 	connect: (self: Event<T...>, listener: Listener<T...>) -> () -> (),
 	connect_once: (self: Event<T...>, listener: Listener<T...>) -> () -> (),
@@ -53,7 +55,7 @@ end
 function Event._fire(self: any, ...)
 	local self: Event<...any> = self
 	for _, callback in self._listeners do
-		task.spawn(xpcall, callback, self._error_handler, ...)
+		sys.task.spawn(xpcall :: any, callback, self._error_handler, ...)
 	end
 end
 
@@ -82,7 +84,7 @@ function Event.wait(self: any): ...any
 	end)
 	
 	while not values do
-		task.wait()
+		sys.task.wait()
 	end
 
 	local values = values :: {any}

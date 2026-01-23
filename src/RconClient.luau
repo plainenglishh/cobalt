@@ -1,8 +1,7 @@
-local task = require("@lune/task")
 local Event = require("./util/Event")
-local WebSocket = require("./util/WebSocket")
 local socket_address = require("./util/socket_address")
 local json = require("./dependencies/json")
+local sys = require("./sys")
 
 local DEFAULT_RCON_PORT = 28016
 local DEFAULT_REQUEST_TIMEOUT = 5
@@ -155,7 +154,7 @@ function RconClient.request_async(self: RconClient, message: string, timeout: nu
 
 	local timeout_at = os.clock() + timeout
 	while not response do
-		task.wait()
+		sys.task.wait()
 		if os.clock() > timeout_at then
 			error(`request timed-out, should this be a request?`, 2)
 		end
@@ -175,17 +174,17 @@ function RconClient.connect(self: RconClient, host: string, password: string, tl
 	local protocol = if tls then "wss" else "ws"
 	local url = `{protocol}://{addr.hostname}:{port}/{password}`
 
-	local socket = WebSocket.new(url)
+	local socket: sys.WebSocket = sys.WebSocket.new(url)
 
-	task.spawn(function()
+	sys.task.spawn(function()
 		while socket:status() ~= "open" do
-			task.wait()
+			sys.task.wait()
 		end
 
 		self._status = "active"
 		self.connected:_fire()
 
-		while task.wait() do
+		while sys.task.wait() do
 			if socket:status() == "closed" then
 				self._status = "dead"
 			end

@@ -1,4 +1,3 @@
-local task = require("@lune/task")
 local Player = require("./Player")
 local json = require("../dependencies/json")
 local rust_vector = require("../util/rust_vector")
@@ -7,6 +6,7 @@ local Event = require("../util/Event")
 local RconClient = require("../RconClient")
 local t = require("../types")
 local hooks = require("../hooks")
+local sys = require("../sys")
 
 local function errored_errored(err: Event.Error)
 	print(`[cobalt]: Bot.errored handler failed: {err.message}\n{err.traceback}`)
@@ -76,11 +76,11 @@ end
 function Bot.run(self: t.Bot, host: string, password: string, tls: boolean?)
 	self._rcon:connect(host, password, tls)
 
-	task.defer(function()
-		local function handle_service_error(err: any)
-			self:_error(err, debug.traceback("", 2), t.ErrorSourceService(debug.info(3, "f")))
-		end
+	local function handle_service_error(err: any)
+		self:_error(err, debug.traceback("", 2), t.ErrorSourceService(debug.info(3, "f")))
+	end
 
+	sys.task.spawn(function()
 		self.started:wait()
 		while self._rcon:status() == "active" do
 			local now = os.clock()
@@ -96,7 +96,7 @@ function Bot.run(self: t.Bot, host: string, password: string, tls: boolean?)
 				service.next_fire = now + service.period
 			end
 
-			task.wait()
+			sys.task.wait()
 		end
 	end)
 end

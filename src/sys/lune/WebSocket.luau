@@ -1,12 +1,11 @@
 local net = require("@lune/net")
-
-export type WebSocketStatus = "connecting" | "open" | "closed" | "errored"
+local sys_types = require("../sys_types")
 
 --[=[
     Polling-based WebSocket.
 ]=]
 export type WebSocket = setmetatable<{
-	_status: WebSocketStatus,
+	_status: "connecting" | "open" | "closed" | "errored",
 	_error: any?,
 	_queue: { string },
 	_socket: net.WebSocket?,
@@ -23,7 +22,7 @@ export type WebSocket = setmetatable<{
         Will connect to the given url.
     ]=]
 	new: (url: string) -> WebSocket,
-	status: (self: WebSocket) -> WebSocketStatus,
+	status: (self: WebSocket) -> "connecting" | "open" | "closed" | "errored",
 
 	--[=[
         Returns the next message, if available.
@@ -106,7 +105,8 @@ function WebSocket._assert_open(self: WebSocket, message: string?, level: number
 	end
 end
 
-function WebSocket.status(self: WebSocket): WebSocketStatus
+function WebSocket.status(self: WebSocket): "connecting" | "open" | "closed" | "errored"
+	self:_poll()
 	return self._status
 end
 
@@ -135,4 +135,4 @@ function WebSocket.close(self: WebSocket, code: number?)
 	end
 end
 
-return WebSocket
+return WebSocket :: sys_types.WebSocket
